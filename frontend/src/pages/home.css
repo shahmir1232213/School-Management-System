@@ -1,0 +1,9 @@
+.home-layout{
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+.child{
+    width: 100%;
+    background-color:white;
+}
