@@ -9,5 +9,5 @@ connection()
 const PORT =  process.env.PORT;
 
 app.listen(PORT,()=>{
-    console.log('server started')
+    console.log('server started: ', PORT)
 })

@@ -16,6 +16,7 @@ export interface IStudent {
 }
 
 export async function register(req: Request, res: Response): Promise<void> {
+  console.log("req.body: ",req.body)
   const student: IStudent = JSON.parse(req.body.student); // ⬅️ FormData sends as string
   const image = req.file?.filename;
 
