@@ -42,7 +42,7 @@ const StudentForms: React.FC<StudentFormsProps> = ({ onClose }) => {
     formData.append("student", JSON.stringify(studentForm)); // send student as stringified JSON
 
     try {
-      const response = await axios.post('http://localhost:3000/student/register', formData, {
+      const response = await axios.post('http://localhost:4000/student/register', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

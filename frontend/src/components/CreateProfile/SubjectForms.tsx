@@ -29,7 +29,7 @@ const SubjectForms: React.FC<SubjectFormsProps> = ({ onClose }) => {
   async function handleFormSubmit(e: React.FormEvent): Promise<void> {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/subjects/register', subjectForm);
+      await axios.post('http://localhost:4000/subjects/register', subjectForm);
       // onClose(); // Uncomment if you want to close after submission
     } catch (err) {
       console.log('Error submitting subjects: ', err);

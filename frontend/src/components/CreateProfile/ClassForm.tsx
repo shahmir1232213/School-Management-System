@@ -29,7 +29,7 @@ const ClassForm: React.FC<ClassFormProps> = ({ onClose }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/class/register', formData);
+      await axios.post('http://localhost:4000/class/register', formData);
       onClose();
     } catch (error) {
       console.error('Error submitting class form:', error);

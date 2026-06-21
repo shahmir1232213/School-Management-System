@@ -15,7 +15,7 @@ const Classes: React.FC = () => {
   useEffect(() => {
     async function fetch() {
       try {
-        const { data } = await axios.get('http://localhost:3000/timetable/fetch');
+        const { data } = await axios.get('http://localhost:4000/timetable/fetch');
         console.log("data: ", data);
         setSchedule(data);
       } catch (err) {
@@ -28,7 +28,7 @@ const Classes: React.FC = () => {
   async function deleteClass(classID:string){
     try{
       //console.log("deleteing: ",classID)
-      const { data } = await axios.post('http://localhost:3000/timetable/class',{classID});
+      const { data } = await axios.post('http://localhost:4000/timetable/class',{classID});
       setSchedule(data);
     }
     catch(err){

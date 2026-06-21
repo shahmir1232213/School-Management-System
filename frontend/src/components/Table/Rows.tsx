@@ -16,7 +16,7 @@ const Rows: React.FC<Props> = ({ data, type }) => {
   // If it’s a Class table, just render one uniform <tr> shape
   async function payFees(id:string):void{
     console.log("id at frontend: ",id)
-    await axios.post('http://localhost:3000/student/feesPaid',{id})
+    await axios.post('http://localhost:4000/student/feesPaid',{id})
   }
 useEffect(() => {
   console.log("profileShowFlag updated: ", profileShowFlag);
@@ -70,7 +70,7 @@ useEffect(() => {
             {console.log("person.image: ",person.image)}
             {person.image && (
               
-              <img src={`http://localhost:3000/images/${person.image}`} className="h-6 w-6 rounded-full" />
+              <img src={`http://localhost:4000/images/${person.image}`} className="h-6 w-6 rounded-full" />
             )}
             {person.name}
           </td>

@@ -57,7 +57,7 @@ const Table: React.FC<Props> = ({ headers, fetch }) => {
     async function fetchData() {
       setLoadingFlag(true);
       try {
-        const { data } = await axios.get(`http://localhost:3000/${fetch}/fetch`);
+        const { data } = await axios.get(`http://localhost:4000/${fetch}/fetch`);
         setLoadingFlag(false);
         switch (fetch) {
           case 'student':

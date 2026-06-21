@@ -98,7 +98,7 @@ const TimetableForm: React.FC<TimetableFormProps> = ({ onClose }) => {
     e.preventDefault()
     setLoadingFlag(true)
     try{
-       await axios.post('http://localhost:3000/timetable/register',klass)
+       await axios.post('http://localhost:4000/timetable/register',klass)
        setLoadingFlag(false)
        onClose()
     }

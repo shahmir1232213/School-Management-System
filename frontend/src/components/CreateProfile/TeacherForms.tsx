@@ -47,7 +47,7 @@ const TeacherForms: React.FC<TeacherFormsProps> = ({ onClose }) => {
     formData.append('teacher', JSON.stringify(teacherForm));
 
     try {
-      await axios.post('http://localhost:3000/teacher/register', formData, {
+      await axios.post('http://localhost:4000/teacher/register', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

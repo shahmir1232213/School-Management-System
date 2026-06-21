@@ -15,7 +15,7 @@ app.use(cors({
     origin: 'http://localhost:5173',
     credentials: true
 }));
-// This serves files like http://localhost:3000/images/filename.png
+// This serves files like http://localhost:4000/images/filename.png
 app.use(express.static('public'));
 app.use(express.static(path.join(__dirname,'public')))
 app.use(express.json())

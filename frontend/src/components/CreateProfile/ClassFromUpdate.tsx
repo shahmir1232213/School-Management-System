@@ -17,7 +17,7 @@ const ClassUpdateForm: React.FC<ClassUpdateFormProps> = ({ onClose }) => {
     e.preventDefault();
     setLoadingFlag(true)
     try {
-      await axios.post('http://localhost:3000/class/promote', {
+      await axios.post('http://localhost:4000/class/promote', {
         currentClassId,
         promotingClassId,
       });

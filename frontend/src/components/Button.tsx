@@ -59,7 +59,7 @@ const Button: React.FC<Props> = ({
           onMouseEnter={() => setHoveringIndex(1)}
           onMouseLeave={() => setHoveringIndex(null)}
           onClick={async () => {
-            await axios.post('http://localhost:3000/student/feeStatusRenew');
+            await axios.post('http://localhost:4000/student/feeStatusRenew');
           }}
         >
           {nextMonth}
