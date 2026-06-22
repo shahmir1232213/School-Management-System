@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { Student, Teacher } from './Table/Table';
 
 type ProfileData = Student | Teacher;
@@ -10,6 +10,10 @@ interface FullScreenProfileProps {
 }
 
 const FullScreenProfile: React.FC<FullScreenProfileProps> = ({ data, type, onClose }) => {
+ useEffect(() => {
+  console.log("studentNam:", data);
+}, [data]);
+  console.log("studentNam: ",data)
   return (
     <div onClick={onClose} className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-2xl w-[90%] max-w-4xl p-8 relative">
@@ -39,7 +43,7 @@ const FullScreenProfile: React.FC<FullScreenProfileProps> = ({ data, type, onClo
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 text-[16px] text-gray-800">
             {type === 'student' ? (
               <>
-                <div><strong>Name:</strong> {(data as Student).studentName}</div>
+                <div><strong>Name:</strong> {(data as Student).name}</div>
                 <div><strong>Father's Name:</strong> {(data as Student).fatherName}</div>
                 <div><strong>Age:</strong> {(data as Student).age}</div>
                 <div><strong>Class:</strong> {(data as Student).className}</div>
