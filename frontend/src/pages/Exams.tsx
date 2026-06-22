@@ -1,9 +1,5 @@
-import React from 'react'
-
 const Exams = () => {
-  return (
-    <div>Exams</div>
-  )
-}
+  return <div>Exams</div>;
+};
 
-export default Exams
+export default Exams;

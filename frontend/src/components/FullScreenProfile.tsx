@@ -1,67 +1,92 @@
-import React, { useEffect } from 'react';
-import type { Student, Teacher } from './Table/Table';
+import type { StudentRecord, TeacherRecord } from "../types/entities";
 
-type ProfileData = Student | Teacher;
+type ProfileData = StudentRecord | TeacherRecord;
 
 interface FullScreenProfileProps {
   data: ProfileData;
-  type: 'student' | 'teacher';
+  type: "student" | "teacher";
   onClose: () => void;
 }
 
 const FullScreenProfile: React.FC<FullScreenProfileProps> = ({ data, type, onClose }) => {
- useEffect(() => {
-  console.log("studentNam:", data);
-}, [data]);
-  console.log("studentNam: ",data)
   return (
-    <div onClick={onClose} className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-2xl w-[90%] max-w-4xl p-8 relative">
-        {/* Close button */}
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
+    >
+      <div
+        className="relative w-[90%] max-w-4xl rounded-lg bg-white p-8 shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
         <button
           onClick={onClose}
-          className="absolute top-4 right-6 text-gray-500 hover:text-black text-2xl font-bold"
+          className="absolute right-6 top-4 text-2xl font-bold text-gray-500 hover:text-black"
         >
-          &times;
+          x
         </button>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Image */}
-          <div className="w-[10rem] h-[10rem] relative">
+        <div className="flex flex-col gap-8 md:flex-row">
+          <div className="relative h-[10rem] w-[10rem]">
             <img
               src={
-                data.image
-                  ? `http://localhost:4000/images/${data.image}`
-                  : '/images/studentpic.png'
+                data.image ? `http://localhost:4000/images/${data.image}` : "/images/studentpic.png"
               }
               alt="Profile"
-              className="object-cover w-full h-full rounded border"
+              className="h-full w-full rounded border object-cover"
             />
           </div>
 
-          {/* Info */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 text-[16px] text-gray-800">
-            {type === 'student' ? (
+          <div className="grid flex-1 grid-cols-1 gap-4 text-[16px] text-gray-800 sm:grid-cols-2">
+            {type === "student" ? (
               <>
-                <div><strong>Name:</strong> {(data as Student).name}</div>
-                <div><strong>Father's Name:</strong> {(data as Student).fatherName}</div>
-                <div><strong>Age:</strong> {(data as Student).age}</div>
-                <div><strong>Class:</strong> {(data as Student).className}</div>
-                <div><strong>Gender:</strong> {(data as Student).gender}</div>
-                <div><strong>Phone:</strong> {(data as Student).phone}</div>
-                <div><strong>Status:</strong> {(data as Student).status}</div>
+                <div>
+                  <strong>Name:</strong> {(data as StudentRecord).name}
+                </div>
+                <div>
+                  <strong>Father's Name:</strong> {(data as StudentRecord).fatherName}
+                </div>
+                <div>
+                  <strong>Age:</strong> {(data as StudentRecord).age}
+                </div>
+                <div>
+                  <strong>Class:</strong> {(data as StudentRecord).className}
+                </div>
+                <div>
+                  <strong>Gender:</strong> {(data as StudentRecord).gender}
+                </div>
+                <div>
+                  <strong>Phone:</strong> {(data as StudentRecord).phone}
+                </div>
+                <div>
+                  <strong>Status:</strong> {(data as StudentRecord).status ?? "unpaid"}
+                </div>
               </>
             ) : (
               <>
-                <div><strong>Name:</strong> {(data as Teacher).name}</div>
-                <div><strong>Email:</strong> {(data as Teacher).email}</div>
-                <div><strong>Phone:</strong> {(data as Teacher).phone || 'N/A'}</div>
-                <div><strong>Qualification:</strong> {(data as Teacher).qualification}</div>
-                <div><strong>Experience:</strong> {(data as Teacher).experience_years} years</div>
-                <div><strong>Specialization:</strong> {(data as Teacher).subjectSpecialization}</div>
                 <div>
-                  <strong>Hire Date:</strong>{' '}
-                  {new Date((data as Teacher).hire_date!).toLocaleDateString()}
+                  <strong>Name:</strong> {(data as TeacherRecord).name}
+                </div>
+                <div>
+                  <strong>Email:</strong> {(data as TeacherRecord).email}
+                </div>
+                <div>
+                  <strong>Phone:</strong> {(data as TeacherRecord).phone || "N/A"}
+                </div>
+                <div>
+                  <strong>Qualification:</strong> {(data as TeacherRecord).qualification || "N/A"}
+                </div>
+                <div>
+                  <strong>Experience:</strong> {(data as TeacherRecord).experienceYears ?? 0} years
+                </div>
+                <div>
+                  <strong>Specialization:</strong>{" "}
+                  {(data as TeacherRecord).subjectSpecialization || "N/A"}
+                </div>
+                <div>
+                  <strong>Hire Date:</strong>{" "}
+                  {(data as TeacherRecord).hireDate
+                    ? new Date((data as TeacherRecord).hireDate as string).toLocaleDateString()
+                    : "N/A"}
                 </div>
               </>
             )}

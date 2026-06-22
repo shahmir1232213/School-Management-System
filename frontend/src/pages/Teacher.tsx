@@ -1,45 +1,32 @@
-import React from 'react';
-import FullScreenProfile from '../components/FullScreenProfile';
-import TableActionsBar from '../components/Table/TableActionsBar';
-import Table from '../components/Table/Table';
-import CreateTeacher from '../components/CreateProfile/CreateProfile'
+import { useState } from "react";
+import TableActionsBar from "../components/Table/TableActionsBar";
+import Table from "../components/Table/Table";
+import CreateProfile from "../components/CreateProfile/CreateProfile";
 
 const Teacher = () => {
-  const [teacherBoard, setTeacherBoard] = React.useState<boolean>(false);
-  const [createProfile_Flag, setCreateProfile_Flag] = React.useState<boolean>(false)
+  const [createProfileFlag, setCreateProfileFlag] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // ✅ Define style object
   const characterStyles = {
-    character: 'Teacher',
-    bgColor: '#055266', // customize color if needed
-    textColor: '#ffffff',
+    character: "Teacher",
+    bgColor: "#055266",
+    textColor: "#ffffff",
   };
 
-  // ✅ Define profile action handler
-  const profileActions = {
-    setCreateProfile_Flag: setCreateProfile_Flag,
-  };
-
-  const headers:string[] = [
-    "ID",
-    "Name",
-    "Phone",
-    "Qualification",
-    "Specialization",
-    "Salary"
-  ];
+  const headers = ["ID", "Name", "Phone", "Qualification", "Specialization", "Salary", "Actions"];
 
   return (
     <div className="flex">
       <TableActionsBar
         characterStyles={characterStyles}
-        profileActions={profileActions}
+        profileActions={{ setCreateProfile_Flag: setCreateProfileFlag }}
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
       />
-      <Table headers={headers}  fetch={'teacher'}/>
-      {createProfile_Flag && (
-        <CreateTeacher onClose={() => setCreateProfile_Flag(false) } type='Teacher'/>
-      )}
-      {teacherBoard && <FullScreenProfile />}
+      <Table headers={headers} resource="teacher" searchTerm={searchTerm} />
+      {createProfileFlag ? (
+        <CreateProfile onClose={() => setCreateProfileFlag(false)} type="Teacher" />
+      ) : null}
     </div>
   );
 };

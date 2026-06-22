@@ -1,147 +1,212 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import type { Teacher } from '../Table/Table';
+import { useState } from "react";
+import axios from "axios";
+import ErrorComponent from "../ErrorComponent";
+import type { TeacherRecord } from "../../types/entities";
 
 interface TeacherFormsProps {
   onClose: () => void;
+  mode?: "create" | "edit";
+  initialData?: TeacherRecord;
+  onSuccess?: () => void;
 }
 
-const TeacherForms: React.FC<TeacherFormsProps> = ({ onClose }) => {
-  const [imageFile, setImageFile] = useState<File | null>(null);
+interface TeacherFormValues {
+  name: string;
+  email: string;
+  phone: string;
+  hireDate: string;
+  qualification: string;
+  experienceYears: number;
+  subjectSpecialization: string;
+  gender: string;
+  salary: number;
+}
 
-  const [teacherForm, setTeacherForm] = useState<Teacher>({
-    name: '',
-    email: '',
-    phone: '',
-    hireDate: '',
-    qualification: '',
-    experienceYears: 0,
-    subjectSpecialization: '',
-    salary: 0,
-    image: '', // Make sure 'image' exists in your Teacher type
+const TeacherForms: React.FC<TeacherFormsProps> = ({
+  onClose,
+  mode = "create",
+  initialData,
+  onSuccess,
+}) => {
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [errorFlag, setErrorFlag] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
+  const [teacherForm, setTeacherForm] = useState<TeacherFormValues>({
+    name: initialData?.name ?? "",
+    email: initialData?.email ?? "",
+    phone: initialData?.phone ?? "",
+    hireDate: initialData?.hireDate ? initialData.hireDate.slice(0, 10) : "",
+    qualification: initialData?.qualification ?? "",
+    experienceYears: initialData?.experienceYears ?? 0,
+    subjectSpecialization: initialData?.subjectSpecialization ?? "",
+    gender: initialData?.gender ?? "",
+    salary: initialData?.salary ?? 0,
   });
 
-  const keys = Object.keys(teacherForm) as (keyof Teacher)[];
-
-  useEffect(() => {
-    console.log('teacherForm:', teacherForm);
-  }, [teacherForm]);
-
-  function handleChange(key: keyof Teacher, value: string | number): void {
+  function handleChange<Key extends keyof TeacherFormValues>(
+    key: Key,
+    value: TeacherFormValues[Key]
+  ): void {
     setTeacherForm((prev) => ({
       ...prev,
       [key]: value,
     }));
   }
 
-  async function handleFormSubmit(e: React.FormEvent): Promise<void> {
-    e.preventDefault();
+  async function handleFormSubmit(event: React.FormEvent): Promise<void> {
+    event.preventDefault();
 
-    if (!imageFile) {
-      alert('Please upload a teacher image.');
+    if (mode === "create" && !imageFile) {
+      setErrMsg("Please upload a teacher image.");
+      setErrorFlag(true);
       return;
     }
 
     const formData = new FormData();
-    formData.append('image', imageFile);
-    formData.append('teacher', JSON.stringify(teacherForm));
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+    formData.append("teacher", JSON.stringify(teacherForm));
 
     try {
-      await axios.post('http://localhost:4000/teacher/register', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      if (mode === "edit" && initialData?._id) {
+        await axios.put(`http://localhost:4000/teacher/${initialData._id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        await axios.post("http://localhost:4000/teacher/register", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+
+      onSuccess?.();
       onClose();
-    } catch (error) {
-      console.error('Error submitting teacher form:', error);
-      alert('Submission failed!');
+    } catch (err) {
+      const message =
+        axios.isAxiosError(err) && err.response?.data?.error
+          ? String(err.response.data.error)
+          : "Submission failed";
+      setErrMsg(message);
+      setErrorFlag(true);
     }
   }
 
-  function resetForm() {
-    setTeacherForm({
-      name: '',
-      email: '',
-      phone: '',
-      hireDate: '',
-      qualification: '',
-      experienceYears: 0,
-      subjectSpecialization: '',
-      salary: 0,
-      image: '',
-    });
-    setImageFile(null);
-  }
+  const previewSrc = imageFile
+    ? URL.createObjectURL(imageFile)
+    : initialData?.image
+    ? `http://localhost:4000/images/${initialData.image}`
+    : "/images/teacherPic.png";
 
   return (
     <>
-      <div className="absolute top-16 right-16 w-[10rem] h-[10rem]">
-         {imageFile ? (
-          <img
-            src={URL.createObjectURL(imageFile)}
-            alt="Selected"
-            className="object-cover w-full h-full rounded"
-          />
-        ) : (
-          <img
-            src="/images/teacherPic.png"
-            alt="Default Student"
-            className="object-cover w-full h-full rounded"
-          />
-        )}
+      <div className="absolute right-16 top-16 h-[10rem] w-[10rem]">
+        <img src={previewSrc} alt="Teacher" className="h-full w-full rounded object-cover" />
       </div>
-<form className="flex flex-col mt-[1rem]" onSubmit={handleFormSubmit}>
-  <div className="flex flex-wrap gap-6 p-4">
-    {keys.map((key) =>
-      key !== 'image' ? (
-        <div key={key} className="flex flex-col">
-          <label className="mb-1 capitalize">{key}</label>
+
+      <form className="mt-[1rem] flex flex-col" onSubmit={(event) => void handleFormSubmit(event)}>
+        <div className="flex flex-wrap gap-6 p-4">
+          <div className="flex flex-col">
+            <label className="mb-1">Name</label>
+            <input
+              className="h-[3rem] w-[13rem] rounded-md border-2 border-gray-300 p-2"
+              value={teacherForm.name}
+              onChange={(event) => handleChange("name", event.target.value)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-1">Email</label>
+            <input
+              className="h-[3rem] w-[13rem] rounded-md border-2 border-gray-300 p-2"
+              value={teacherForm.email}
+              onChange={(event) => handleChange("email", event.target.value)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-1">Phone</label>
+            <input
+              className="h-[3rem] w-[13rem] rounded-md border-2 border-gray-300 p-2"
+              value={teacherForm.phone}
+              onChange={(event) => handleChange("phone", event.target.value)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-1">Hire Date</label>
+            <input
+              className="h-[3rem] w-[13rem] rounded-md border-2 border-gray-300 p-2"
+              type="date"
+              value={teacherForm.hireDate}
+              onChange={(event) => handleChange("hireDate", event.target.value)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-1">Qualification</label>
+            <input
+              className="h-[3rem] w-[13rem] rounded-md border-2 border-gray-300 p-2"
+              value={teacherForm.qualification}
+              onChange={(event) => handleChange("qualification", event.target.value)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-1">Experience Years</label>
+            <input
+              className="h-[3rem] w-[13rem] rounded-md border-2 border-gray-300 p-2"
+              type="number"
+              value={teacherForm.experienceYears}
+              onChange={(event) => handleChange("experienceYears", Number(event.target.value))}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-1">Specialization</label>
+            <input
+              className="h-[3rem] w-[13rem] rounded-md border-2 border-gray-300 p-2"
+              value={teacherForm.subjectSpecialization}
+              onChange={(event) => handleChange("subjectSpecialization", event.target.value)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-1">Gender</label>
+            <input
+              className="h-[3rem] w-[13rem] rounded-md border-2 border-gray-300 p-2"
+              value={teacherForm.gender}
+              onChange={(event) => handleChange("gender", event.target.value)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label className="mb-1">Salary</label>
+            <input
+              className="h-[3rem] w-[13rem] rounded-md border-2 border-gray-300 p-2"
+              type="number"
+              value={teacherForm.salary}
+              onChange={(event) => handleChange("salary", Number(event.target.value))}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2 p-4">
+          <label className="font-semibold">Upload Teacher Image</label>
           <input
-            className="border-2 border-gray-300 rounded-md p-2 w-[13rem] h-[3rem]"
-            type={
-              key === 'hireDate'
-                ? 'date'
-                : typeof teacherForm[key] === 'number'
-                ? 'number'
-                : 'text'
-            }
-            placeholder={`Enter ${key}`}
-            value={teacherForm[key] as string | number}
-            onChange={(e) =>
-              handleChange(
-                key,
-                typeof teacherForm[key] === 'number'
-                  ? +e.target.value
-                  : e.target.value
-              )
-            }
+            type="file"
+            accept="image/*"
+            onChange={(event) => setImageFile(event.target.files?.[0] || null)}
+            className="w-[22rem] border p-2"
           />
         </div>
-      ) : null
-    )}
-  </div>
 
-  <div className="flex flex-col gap-2 p-4">
-    <label className="font-semibold">Upload Teacher Image</label>
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-      className="border p-2 w-[22rem]"
-    />
-  </div>
+        <div className="flex flex-wrap gap-4 p-4">
+          <button
+            type="submit"
+            className="h-[3rem] w-56 rounded-md border-2 bg-[#055266] text-white"
+          >
+            {mode === "edit" ? "Update" : "Submit"}
+          </button>
+        </div>
+      </form>
 
-  <div className="flex flex-wrap gap-4 p-4">
-    <button
-      type="submit"
-      className="border-2 w-56 bg-[#055266] text-white h-[3rem] rounded-md"
-    >
-      Submit
-    </button>
-  </div>
-</form>
-
+      {errorFlag ? <ErrorComponent errMsg={errMsg} onClose={() => setErrorFlag(false)} /> : null}
     </>
   );
 };

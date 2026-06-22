@@ -1,39 +1,34 @@
-import React from 'react'
-//import FullScreenProfile from '../components/FullScreenProfile'
-import TableActionsBar from '../components/Table/TableActionsBar'
-import Table from '../components/Table/Table'
-import CreateProfile from '../components/CreateProfile/CreateProfile'
+import { useState } from "react";
+import TableActionsBar from "../components/Table/TableActionsBar";
+import Table from "../components/Table/Table";
+import CreateProfile from "../components/CreateProfile/CreateProfile";
 
-const Subjects:React.FC = () => {
-  //const [studentBoard, setStudentBoard] = React.useState<boolean>(true)
-  const [createProfile_Flag, setCreateProfile_Flag] = React.useState<boolean>(false)
-  
+const Subjects: React.FC = () => {
+  const [createProfileFlag, setCreateProfileFlag] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const characterStyles = {
-    character: 'Subjects',
-    bgColor: '#055266',
-    textColor: '#ffffff',
+    character: "Subjects",
+    bgColor: "#055266",
+    textColor: "#ffffff",
   };
 
-  const profileActions = {
-    setCreateProfile_Flag: setCreateProfile_Flag,
-  };
-  
-  const headers:string[] = ["Subject ID", "Subject Name",'Class Name', "Teacher ID"];
+  const headers = ["Subject ID", "Subject Name", "Class Name", "Teacher ID", "Actions"];
 
   return (
     <div className="relative flex">
       <TableActionsBar
-        profileActions={profileActions}
+        profileActions={{ setCreateProfile_Flag: setCreateProfileFlag }}
         characterStyles={characterStyles}
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
       />
-      <Table headers={headers} fetch={'subjects'}/>
-      {createProfile_Flag && (
-        <CreateProfile type={'Subjects'} onClose={() => setCreateProfile_Flag(false) }/>
-      )}
-      
-       {/* {studentBoard && <FullScreenProfile />}  */}
+      <Table headers={headers} resource="subjects" searchTerm={searchTerm} />
+      {createProfileFlag ? (
+        <CreateProfile type="Subjects" onClose={() => setCreateProfileFlag(false)} />
+      ) : null}
     </div>
-  )
-}
+  );
+};
 
-export default Subjects
+export default Subjects;

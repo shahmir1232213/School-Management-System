@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import StatCard from '../components/DashBoard/StatCard'
 import Loading from '../components/Loading'
@@ -50,7 +50,7 @@ const Dashboard = () => {
        {loadingFlag ? (
         <Loading />
       ) : errorFlag ? (
-        <ErrorComponent errMsg={dataFetch?.error} onClose={() => setErrorFlag(false)} />
+        <ErrorComponent errMsg={dataFetch?.error ?? 'Unknown error'} onClose={() => setErrorFlag(false)} />
       ) : (
         <>
         <h1 className="relative inline-block text-3xl font-bold text-[#055266] mb-10 animate-fade-in-up transition-all duration-1000 hover:scale-105 hover:text-teal-700 hover:drop-shadow-lg cursor-pointer group">

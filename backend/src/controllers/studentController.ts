@@ -1,39 +1,56 @@
 import { Request, Response } from "express";
 import Student from "../models/studentSchema";
-import ClassSchema from '../models/classesSchema'
+import ClassSchema from "../models/classesSchema";
 
-// ✅ Updated Interface
 export interface IStudent {
-  id: number;              // previously studentId
-  name: string;            // previously studentName
+  id: number;
+  name: string;
   fatherName: string;
-  phone: number;           // previously phoneNumber
+  phone: number;
   age: number;
   className: string;
   gender: string;
-  image:string;
+  image: string;
   admissionDATE?: string;
 }
 
+function parseStudentPayload(req: Request): Partial<IStudent> {
+  if (typeof req.body.student === "string") {
+    return JSON.parse(req.body.student) as Partial<IStudent>;
+  }
+
+  return req.body as Partial<IStudent>;
+}
+
+async function syncStudentCount(classId: string): Promise<void> {
+  const classDoc = await ClassSchema.findOne({ id: classId });
+
+  if (!classDoc) {
+    return;
+  }
+
+  classDoc.noOfStudents = classDoc.students.length;
+  await classDoc.save();
+}
+
 export async function register(req: Request, res: Response): Promise<void> {
-  console.log("req.body: ",req.body)
-  const student: IStudent = JSON.parse(req.body.student); // ⬅️ FormData sends as string
+  const student = parseStudentPayload(req) as IStudent;
   const image = req.file?.filename;
 
   try {
     const classExists = await ClassSchema.findOne({ id: student.className });
 
     if (!classExists) {
-      res.status(400).json({ error: `Class ${student.className} does not exist `});
+      res.status(400).json({ error: `Class ${student.className} does not exist` });
       return;
     }
 
     const insertedStudent = await Student.create({
       ...student,
-      image, // ✅ save filename to DB
+      image,
     });
 
-    let classUpdate = await ClassSchema.findOneAndUpdate(
+    const classUpdate = await ClassSchema.findOneAndUpdate(
       { id: student.className },
       { $push: { students: insertedStudent._id } }
     );
@@ -43,30 +60,18 @@ export async function register(req: Request, res: Response): Promise<void> {
       await classUpdate.save();
     }
 
-    res.status(201).json({ message: "Student registered successfully" });
+    res.status(201).json({
+      message: "Student registered successfully",
+      student: insertedStudent,
+    });
   } catch (err) {
-    console.error("Error: ", err);
+    console.error("Error registering student:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 }
 
-// export async function fetch(req: Request, res: Response) {
-//   try {
-//     console.log("req reached for fetch");
-
-//     // Simulate a 20-second delay
-//     await new Promise((resolve) => setTimeout(resolve, 20000));
-
-//     const students = await Student.find();
-//     res.status(200).json(students);
-//   } catch (err) {
-//     res.status(500).json({ error: "Failed to fetch students" });
-//   }
-// }
-
-export async function fetch(req: Request, res: Response) {
+export async function fetch(req: Request, res: Response): Promise<void> {
   try {
-    console.log("req reached for fetch")
     const students = await Student.find();
     res.status(200).json(students);
   } catch (err) {
@@ -74,27 +79,26 @@ export async function fetch(req: Request, res: Response) {
   }
 }
 
-export async function feeStatusRenew(req: Request, res: Response){
+export async function feeStatusRenew(req: Request, res: Response): Promise<void> {
   try {
-    await Student.updateMany({}, { status: 'unpaid' });
-    res.status(200)
+    await Student.updateMany({}, { status: "unpaid" });
+    res.status(200).json({ message: "Fee status reset successfully" });
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch students" });
+    res.status(500).json({ error: "Failed to update fee status" });
   }
 }
-export async function feesPaid(req: Request, res: Response) {
-  try {
-    const { id } = req.body;
-    console.log("req reached for: ", id);
 
+export async function feesPaid(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.body as { id: string };
     const student = await Student.findById(id);
 
     if (!student) {
-      return res.status(404).json({ error: "Student not found" });
+      res.status(404).json({ error: "Student not found" });
+      return;
     }
 
-    const newStatus = student.status === 'paid' ? 'unpaid' : 'paid';
-
+    const newStatus = student.status === "paid" ? "unpaid" : "paid";
     await Student.findByIdAndUpdate(id, { status: newStatus });
 
     res.status(200).json({ message: `Status updated to ${newStatus}` });
@@ -104,24 +108,78 @@ export async function feesPaid(req: Request, res: Response) {
   }
 }
 
-// export async function postImage(req: Request, res: Response) {
-//   try {
-//     const student = JSON.parse(req.body.student); // 👈 this is critical
-//     console.log("student: ", student);
-//     console.log("req.file: ", req.file);
+export async function update(req: Request, res: Response): Promise<void> {
+  try {
+    const existingStudent = await Student.findById(req.params.id);
 
-//     if (!req.file) {
-//       return res.status(400).json({ error: "No image file uploaded" });
-//     }
+    if (!existingStudent) {
+      res.status(404).json({ error: "Student not found" });
+      return;
+    }
 
-//     await Student.findOneAndUpdate(
-//       { phone: student.phone },
-//       { image: req.file.filename } // only saving filename, you can adjust
-//     );
+    const studentData = parseStudentPayload(req);
+    const nextClassName = studentData.className ?? existingStudent.className;
 
-//     res.status(200).json({ message: "Image uploaded successfully" });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: `Upload failed` });
-//   }
-// }
+    if (nextClassName !== existingStudent.className) {
+      const classExists = await ClassSchema.findOne({ id: nextClassName });
+
+      if (!classExists) {
+        res.status(400).json({ error: `Class ${nextClassName} does not exist` });
+        return;
+      }
+
+      await ClassSchema.updateOne(
+        { id: existingStudent.className },
+        { $pull: { students: existingStudent._id } }
+      );
+
+      await ClassSchema.updateOne(
+        { id: nextClassName },
+        { $addToSet: { students: existingStudent._id } }
+      );
+
+      await Promise.all([
+        syncStudentCount(existingStudent.className),
+        syncStudentCount(nextClassName),
+      ]);
+    }
+
+    existingStudent.set({
+      ...studentData,
+      className: nextClassName,
+      image: req.file?.filename ?? existingStudent.image,
+    });
+
+    await existingStudent.save();
+    res.status(200).json({
+      message: "Student updated successfully",
+      student: existingStudent,
+    });
+  } catch (err) {
+    console.error("Error updating student:", err);
+    res.status(500).json({ error: "Failed to update student" });
+  }
+}
+
+export async function remove(req: Request, res: Response): Promise<void> {
+  try {
+    const student = await Student.findById(req.params.id);
+
+    if (!student) {
+      res.status(404).json({ error: "Student not found" });
+      return;
+    }
+
+    await ClassSchema.updateOne(
+      { id: student.className },
+      { $pull: { students: student._id } }
+    );
+    await syncStudentCount(student.className);
+
+    await student.deleteOne();
+    res.status(200).json({ message: "Student deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting student:", err);
+    res.status(500).json({ error: "Failed to delete student" });
+  }
+}

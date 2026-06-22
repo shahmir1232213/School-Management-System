@@ -1,28 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import type { ITimetable } from '../CreateProfile/TimetableForm';
-import type { ISubjectSchedule } from '../CreateProfile/TimetableForm';
+import { useEffect, useState } from "react";
+import type { TimetableRecord, TimetableSubject } from "../../types/entities";
 
 interface ClassScheduleModalProps {
   setClassView_Flag: (flag: boolean) => void;
-  Details: ITimetable;
- // setSchedule:(a:ITimetable[])=>void;
-}
-
-interface Subject {
-  subjectID: string;
-  dayOfWeek: string;
-  startTime: string;
-  endTime: string;
-  room: string;
-  _id: string;
+  Details: TimetableRecord;
 }
 
 interface GroupedSubjects {
-  [day: string]: Subject[];
+  [day: string]: TimetableSubject[];
 }
 
-function groupSubjectsByDay(subjectDetails: ISubjectSchedule): GroupedSubjects {
-  return subjectDetails.reduce((acc: GroupedSubjects, item: Subject) => {
+function groupSubjectsByDay(subjectDetails: TimetableSubject[]): GroupedSubjects {
+  return subjectDetails.reduce((acc: GroupedSubjects, item) => {
     const day = item.dayOfWeek;
     if (!acc[day]) {
       acc[day] = [];
@@ -32,7 +21,7 @@ function groupSubjectsByDay(subjectDetails: ISubjectSchedule): GroupedSubjects {
   }, {});
 }
 
-const weekdaysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const weekdaysOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 const ClassScheduleModal: React.FC<ClassScheduleModalProps> = ({
   setClassView_Flag,
@@ -42,8 +31,7 @@ const ClassScheduleModal: React.FC<ClassScheduleModalProps> = ({
 
   useEffect(() => {
     if (Details.subjectDetails.length > 0) {
-      const grouped = groupSubjectsByDay(Details.subjectDetails);
-      setFilteredData(grouped);
+      setFilteredData(groupSubjectsByDay(Details.subjectDetails));
     }
   }, [Details]);
 
@@ -54,38 +42,37 @@ const ClassScheduleModal: React.FC<ClassScheduleModalProps> = ({
         onClick={() => setClassView_Flag(false)}
       ></div>
 
-      <div className="relative z-60 bg-white w-[65rem] max-h-[90vh] overflow-y-auto rounded-xl p-6 shadow-2xl">
+      <div className="relative z-60 max-h-[90vh] w-[65rem] overflow-y-auto rounded-xl bg-white p-6 shadow-2xl">
         <button
           onClick={() => setClassView_Flag(false)}
-          className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl font-bold"
+          className="absolute right-4 top-4 text-2xl font-bold text-gray-500 hover:text-black"
         >
           x
         </button>
 
-        <h2 className="text-2xl font-bold mb-5">
-          Class {Details.classID} - Weekly Schedule
-        </h2>
+        <h2 className="mb-5 text-2xl font-bold">Class {Details.classID} - Weekly Schedule</h2>
 
-        {/* Day-wise grouping */}
         <div className="space-y-6">
           {weekdaysOrder.map((day) => {
             const subjects = filteredData[day];
-            if (!subjects || subjects.length === 0) return null;
+            if (!subjects || subjects.length === 0) {
+              return null;
+            }
 
             return (
               <div key={day}>
-                <h3 className="text-lg font-semibold mb-2">{day}</h3>
+                <h3 className="mb-2 text-lg font-semibold">{day}</h3>
                 <div className="space-y-2">
-                  {subjects.map((item) => (
+                  {subjects.map((item, index) => (
                     <div
-                      key={item._id}
-                      className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-lg shadow-sm"
+                      key={`${item.subjectID}-${index}`}
+                      className="flex items-center justify-between rounded-lg bg-gray-50 px-4 py-3 shadow-sm"
                     >
-                      <div className="text-blue-700 font-semibold">{item.subjectID}</div>
-                      <div className="text-gray-500 text-sm">
+                      <div className="font-semibold text-blue-700">{item.subjectID}</div>
+                      <div className="text-sm text-gray-500">
                         {item.startTime} - {item.endTime}
                       </div>
-                      <div className="text-gray-500 text-sm">{item.room}</div>
+                      <div className="text-sm text-gray-500">{item.room || "-"}</div>
                     </div>
                   ))}
                 </div>

@@ -1,12 +1,5 @@
-import React, { useState } from 'react';
-import type { ProfileActions } from './Table/TableActionsBar';
-import type { ProfileUpdateActions } from './Table/TableActionsBar';
-import axios from 'axios';
-
-interface CharacterStyles {
-  bgColor: string;
-  textColor: string;
-}
+import type { CharacterStyles, ProfileActions, ProfileUpdateActions } from "./Table/TableActionsBar";
+import axios from "axios";
 
 interface Props {
   characterStyles: CharacterStyles;
@@ -21,62 +14,50 @@ const Button: React.FC<Props> = ({
   profileActions,
   profileUpdateActions,
   nextMonth,
-  text
+  text,
 }) => {
-  const { bgColor, textColor } = characterStyles;
-  const setCreateProfile_Flag = profileActions?.setCreateProfile_Flag;
-  const setupdateProfile_Flag = profileUpdateActions?.setupdateProfile_Flag;
-  const updateText = profileUpdateActions?.updateText;
+  const baseButtonStyles =
+    "rounded-lg font-bold py-2 px-4 text-center h-[4rem] min-w-[9rem] cursor-pointer flex items-center justify-center transition-all duration-300 transform hover:scale-105";
 
-  const [isHovering, setIsHovering] = useState(false);
-  const [hoveringIndex, setHoveringIndex] = useState<number | null>(null);
-
-  const baseButtonStyles = `rounded-lg font-bold py-2 px-4 text-center h-[4rem] w-[9rem] cursor-pointer flex items-center justify-center 
-    transition-all duration-300 transform hover:scale-105`;
-
-  const getButtonStyle = (index: number) => ({
-    backgroundColor: hoveringIndex === index ? '#74b0bb' : bgColor,
-    color: hoveringIndex === index ? bgColor : textColor,    
-   // color: textColor,
-  });
+  const sharedStyle = {
+    backgroundColor: characterStyles.bgColor,
+    color: characterStyles.textColor,
+  };
 
   return (
     <>
-      <div
+      <button
+        type="button"
         className={baseButtonStyles}
-        style={getButtonStyle(0)}
-        onMouseEnter={() => setHoveringIndex(0)}
-        onMouseLeave={() => setHoveringIndex(null)}
-        onClick={() => setCreateProfile_Flag?.(true)}
+        style={sharedStyle}
+        onClick={() => profileActions.setCreateProfile_Flag(true)}
       >
         {text}
-      </div>
+      </button>
 
-      {nextMonth && (
-        <div
+      {nextMonth ? (
+        <button
+          type="button"
           className={baseButtonStyles}
-          style={getButtonStyle(1)}
-          onMouseEnter={() => setHoveringIndex(1)}
-          onMouseLeave={() => setHoveringIndex(null)}
+          style={sharedStyle}
           onClick={async () => {
-            await axios.post('http://localhost:4000/student/feeStatusRenew');
+            await axios.post("http://localhost:4000/student/feeStatusRenew");
           }}
         >
           {nextMonth}
-        </div>
-      )}
+        </button>
+      ) : null}
 
-      {profileUpdateActions && (
-        <div
+      {profileUpdateActions ? (
+        <button
+          type="button"
           className={baseButtonStyles}
-          style={getButtonStyle(2)}
-          onMouseEnter={() => setHoveringIndex(2)}
-          onMouseLeave={() => setHoveringIndex(null)}
-          onClick={() => setupdateProfile_Flag?.(true)}
+          style={sharedStyle}
+          onClick={() => profileUpdateActions.setupdateProfile_Flag(true)}
         >
-          {updateText}
-        </div>
-      )}
+          {profileUpdateActions.updateText}
+        </button>
+      ) : null}
     </>
   );
 };

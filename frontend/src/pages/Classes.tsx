@@ -1,51 +1,40 @@
-import React,{useState} from 'react';
-import TableActionsBar from '../components/Table/TableActionsBar';
-import Table from '../components/Table/Table';
-import CreateProfile from '../components/CreateProfile/CreateProfile'; // If you reuse this for classes
-import FullScreenProfile from '../components/FullScreenProfile'; // Optional, if applicable
+import { useState } from "react";
+import TableActionsBar from "../components/Table/TableActionsBar";
+import Table from "../components/Table/Table";
+import CreateProfile from "../components/CreateProfile/CreateProfile";
 
 const Classes = () => {
-  const [createProfile_Flag, setCreateProfile_Flag] = useState<boolean>(false);
-  const [updateProfile_Flag,setupdateProfile_Flag] = useState<boolean>(false);
-  const [classBoard, setClassBoard] = React.useState<boolean>(false); // Optional if you support detailed view
+  const [createProfileFlag, setCreateProfileFlag] = useState(false);
+  const [updateProfileFlag, setUpdateProfileFlag] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const characterStyles = {
-    character: 'Class',
-    bgColor: '#055266',
-    textColor: '#ffffff',
+    character: "Class",
+    bgColor: "#055266",
+    textColor: "#ffffff",
   };
 
-  const profileActions = {
-    setCreateProfile_Flag: setCreateProfile_Flag,
-  };
-   const profileUpdateActions = {
-      setupdateProfile_Flag:setupdateProfile_Flag,
-      updateText:'Promote Students'
-  };
-
-  const headers: string[] = [
-    "Class ID",
-    "No of Students",
-    "No of Subjects",
-    "Fees",
-    
-];
+  const headers = ["Class ID", "No of Students", "No of Subjects", "Fees", "Actions"];
 
   return (
     <div className="flex">
       <TableActionsBar
         characterStyles={characterStyles}
-        profileActions={profileActions}
-        profileUpdateActions={profileUpdateActions}
+        profileActions={{ setCreateProfile_Flag: setCreateProfileFlag }}
+        profileUpdateActions={{
+          setupdateProfile_Flag: setUpdateProfileFlag,
+          updateText: "Promote Students",
+        }}
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
       />
-      <Table headers={headers} fetch="Class" />
-      {createProfile_Flag && (
-        <CreateProfile onClose={() => setCreateProfile_Flag(false)} type="Class" />
-      )}
-      {updateProfile_Flag && (
-        <CreateProfile onClose={() => setupdateProfile_Flag(false)} type="ClassUpdate" />
-      )}
-      {classBoard && <FullScreenProfile />}
+      <Table headers={headers} resource="class" searchTerm={searchTerm} />
+      {createProfileFlag ? (
+        <CreateProfile onClose={() => setCreateProfileFlag(false)} type="Class" />
+      ) : null}
+      {updateProfileFlag ? (
+        <CreateProfile onClose={() => setUpdateProfileFlag(false)} type="ClassUpdate" />
+      ) : null}
     </div>
   );
 };

@@ -13,14 +13,23 @@ import Subjects from './pages/Subjects';
 import Dashboard from './pages/Dashboard';
 import Timetable from './pages/Timetable';
 import Classes from './pages/Classes'
+import IsLoggedIn from './components/IsLoggedIn';
 
 const App: React.FC = () => {
   return (
     <Routes>
+      <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/start" element={<Start />} />
 
-      <Route path="/home" element={<Home />}>
+      <Route
+        path="/home"
+        element={
+          <IsLoggedIn>
+            <Home />
+          </IsLoggedIn>
+        }
+      >
         <Route path="students" element={<Students />} />
         <Route path="subjects" element={<Subjects />} />
         <Route path="dashboard" element={<Dashboard/>} />
