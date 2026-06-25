@@ -108,7 +108,7 @@ const Table: React.FC<Props> = ({ headers, resource, searchTerm = "" }) => {
     setLoadingFlag(true);
     try {
       const { data: response } = await axios.get(
-        `http://localhost:4000/${endpointByResource[resource]}/fetch`
+        `http://localhost:5000/${endpointByResource[resource]}/fetch`
       );
       setData(response as TableRecord[]);
     } catch (err) {

@@ -14,7 +14,7 @@ const Login: React.FC = () => {
   useEffect(() => {
     async function verifyAuth(): Promise<void> {
       try {
-        await axios.get("http://localhost:4000/auth/verify");
+        await axios.get("http://localhost:5000/auth/verify");
         navigate("/home/dashboard", { replace: true });
       } catch (error) {
         return;
@@ -29,7 +29,7 @@ const Login: React.FC = () => {
     setLoadingFlag(true);
 
     try {
-      await axios.post("http://localhost:4000/auth/login", {
+      await axios.post("http://localhost:5000/auth/login", {
         adminId,
         password,
       });

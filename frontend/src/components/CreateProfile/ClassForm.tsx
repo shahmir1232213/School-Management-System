@@ -33,9 +33,9 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
     try {
       if (mode === "edit" && initialData?._id) {
-        await axios.put(`http://localhost:4000/class/${initialData._id}`, formData);
+        await axios.put(`http://localhost:5000/class/${initialData._id}`, formData);
       } else {
-        await axios.post("http://localhost:4000/class/register", [formData]);
+        await axios.post("http://localhost:5000/class/register", [formData]);
       }
 
       onSuccess?.();

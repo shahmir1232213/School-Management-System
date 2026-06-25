@@ -16,7 +16,7 @@ const Classes: React.FC = () => {
 
   async function fetchSchedules(): Promise<void> {
     try {
-      const { data } = await axios.get("http://localhost:4000/timetable/fetch");
+      const { data } = await axios.get("http://localhost:5000/timetable/fetch");
       setSchedule(data as TimetableRecord[]);
     } catch (err) {
       console.log("Unable to fetch timetable", err);
@@ -35,7 +35,7 @@ const Classes: React.FC = () => {
     setDeleteLoading(true);
 
     try {
-      const { data } = await axios.post("http://localhost:4000/timetable/class", {
+      const { data } = await axios.post("http://localhost:5000/timetable/class", {
         classID: pendingDelete.classID,
       });
       setSchedule(data as TimetableRecord[]);

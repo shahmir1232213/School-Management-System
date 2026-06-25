@@ -70,13 +70,13 @@ const TeacherForms: React.FC<TeacherFormsProps> = ({
 
     try {
       if (mode === "edit" && initialData?._id) {
-        await axios.put(`http://localhost:4000/teacher/${initialData._id}`, formData, {
+        await axios.put(`http://localhost:5000/teacher/${initialData._id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
       } else {
-        await axios.post("http://localhost:4000/teacher/register", formData, {
+        await axios.post("http://localhost:5000/teacher/register", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -98,7 +98,7 @@ const TeacherForms: React.FC<TeacherFormsProps> = ({
   const previewSrc = imageFile
     ? URL.createObjectURL(imageFile)
     : initialData?.image
-    ? `http://localhost:4000/images/${initialData.image}`
+    ? `http://localhost:5000/images/${initialData.image}`
     : "/images/teacherPic.png";
 
   return (

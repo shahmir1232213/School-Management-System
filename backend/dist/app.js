@@ -15,11 +15,14 @@ const dashBoardRouter_1 = __importDefault(require("./routes/dashBoardRouter"));
 const authRouter_1 = __importDefault(require("./routes/authRouter"));
 const authMiddleware_1 = require("./middleware/authMiddleware");
 const app = (0, express_1.default)();
+// CORS - Hardcoded to your frontend port
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:5173',
+    origin: 'http://localhost:3001', // ← Hardcoded to YOUR browser port!
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
-// This serves files like http://localhost:4000/images/filename.png
+// This serves files like http://localhost:5000/images/filename.png
 app.use(express_1.default.static('public'));
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use(express_1.default.json());

@@ -76,7 +76,7 @@ const Rows: React.FC<Props> = ({ data, resource, onEdit, onRefresh }) => {
     setDeleteLoading(true);
 
     try {
-      await axios.delete(`http://localhost:4000/${endpointByResource[resource]}/${pendingDelete._id}`);
+      await axios.delete(`http://localhost:5000/${endpointByResource[resource]}/${pendingDelete._id}`);
       setPendingDelete(null);
       await onRefresh();
     } catch (err) {
@@ -93,7 +93,7 @@ const Rows: React.FC<Props> = ({ data, resource, onEdit, onRefresh }) => {
 
   async function handleFeesPaid(studentId: string): Promise<void> {
     try {
-      await axios.post("http://localhost:4000/student/feesPaid", { id: studentId });
+      await axios.post("http://localhost:5000/student/feesPaid", { id: studentId });
       await onRefresh();
     } catch (err) {
       console.log("Unable to update fee status", err);
@@ -127,7 +127,7 @@ const Rows: React.FC<Props> = ({ data, resource, onEdit, onRefresh }) => {
                 <div className="flex items-center justify-center gap-2">
                   {record.image ? (
                     <img
-                      src={`http://localhost:4000/images/${record.image}`}
+                      src={`http://localhost:5000/images/${record.image}`}
                       alt={record.name}
                       className="h-8 w-8 rounded-full object-cover"
                     />
@@ -177,7 +177,7 @@ const Rows: React.FC<Props> = ({ data, resource, onEdit, onRefresh }) => {
                 <div className="flex items-center justify-center gap-2">
                   {record.image ? (
                     <img
-                      src={`http://localhost:4000/images/${record.image}`}
+                      src={`http://localhost:5000/images/${record.image}`}
                       alt={record.name}
                       className="h-8 w-8 rounded-full object-cover"
                     />

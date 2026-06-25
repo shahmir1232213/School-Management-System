@@ -41,7 +41,7 @@ const Button: React.FC<Props> = ({
           className={baseButtonStyles}
           style={sharedStyle}
           onClick={async () => {
-            await axios.post("http://localhost:4000/student/feeStatusRenew");
+            await axios.post("http://localhost:5000/student/feeStatusRenew");
           }}
         >
           {nextMonth}

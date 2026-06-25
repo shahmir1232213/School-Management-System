@@ -19,7 +19,7 @@ const Dashboard = () => {
   useEffect(() => {
     async function fetch() {
       try {
-        const { data } = await axios.get('http://localhost:4000/dashBoard/fetch')
+        const { data } = await axios.get('http://localhost:5000/dashBoard/fetch')
         console.log('data: ', data)
         setDataFetch({
           totalStudents: data.totalStudents,

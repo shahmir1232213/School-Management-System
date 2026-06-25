@@ -67,9 +67,9 @@ const TimetableForm: React.FC<TimetableFormProps> = ({
 
     try {
       if (mode === "edit" && initialData?._id) {
-        await axios.put(`http://localhost:4000/timetable/${initialData._id}`, formState);
+        await axios.put(`http://localhost:5000/timetable/${initialData._id}`, formState);
       } else {
-        await axios.post("http://localhost:4000/timetable/register", [formState]);
+        await axios.post("http://localhost:5000/timetable/register", [formState]);
       }
 
       setLoadingFlag(false);

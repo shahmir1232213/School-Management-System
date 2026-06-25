@@ -29,7 +29,7 @@ const FullScreenProfile: React.FC<FullScreenProfileProps> = ({ data, type, onClo
           <div className="relative h-[10rem] w-[10rem]">
             <img
               src={
-                data.image ? `http://localhost:4000/images/${data.image}` : "/images/studentpic.png"
+                data.image ? `http://localhost:5000/images/${data.image}` : "/images/studentpic.png"
               }
               alt="Profile"
               className="h-full w-full rounded border object-cover"

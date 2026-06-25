@@ -20,7 +20,7 @@ const ClassUpdateForm: React.FC<ClassUpdateFormProps> = ({ onClose, onSuccess })
     setLoadingFlag(true);
 
     try {
-      await axios.post("http://localhost:4000/class/promote", {
+      await axios.post("http://localhost:5000/class/promote", {
         currentClassId,
         promotingClassId,
       });

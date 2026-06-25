@@ -76,13 +76,13 @@ const StudentForms: React.FC<StudentFormsProps> = ({
 
     try {
       if (mode === "edit" && initialData?._id) {
-        await axios.put(`http://localhost:4000/student/${initialData._id}`, formData, {
+        await axios.put(`http://localhost:5000/student/${initialData._id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
       } else {
-        await axios.post("http://localhost:4000/student/register", formData, {
+        await axios.post("http://localhost:5000/student/register", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -104,7 +104,7 @@ const StudentForms: React.FC<StudentFormsProps> = ({
   const previewSrc = imageFile
     ? URL.createObjectURL(imageFile)
     : initialData?.image
-    ? `http://localhost:4000/images/${initialData.image}`
+    ? `http://localhost:5000/images/${initialData.image}`
     : "/images/studentpic.png";
 
   return (

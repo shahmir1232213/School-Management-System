@@ -47,9 +47,9 @@ const SubjectForms: React.FC<SubjectFormsProps> = ({
 
     try {
       if (mode === "edit" && initialData?._id) {
-        await axios.put(`http://localhost:4000/subjects/${initialData._id}`, subjectForm);
+        await axios.put(`http://localhost:5000/subjects/${initialData._id}`, subjectForm);
       } else {
-        await axios.post("http://localhost:4000/subjects/register", [subjectForm]);
+        await axios.post("http://localhost:5000/subjects/register", [subjectForm]);
       }
 
       onSuccess?.();

@@ -15,7 +15,7 @@ const IsLoggedIn: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     async function verifyAuth(): Promise<void> {
       try {
-        await axios.get("http://localhost:4000/auth/verify");
+        await axios.get("http://localhost:5000/auth/verify");
         setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);

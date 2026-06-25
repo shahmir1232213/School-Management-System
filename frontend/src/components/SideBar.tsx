@@ -16,7 +16,7 @@ const SideBar: React.FC = () => {
     setLogoutLoading(true);
 
     try {
-      await axios.post("http://localhost:4000/auth/logout");
+      await axios.post("http://localhost:5000/auth/logout");
       navigate("/", { replace: true });
     } catch (error) {
       const message =
